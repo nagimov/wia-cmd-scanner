@@ -7,17 +7,21 @@ The utility is built around WIA (Microsoft Windows Image Acquisition Library). D
 ## Usage
 
 ```
-Usage: wia-cmd-scanner [OPTIONS]...                                           
-                                                                              
-All arguments are mandatory. Arguments must be ordered as follows:            
-                                                                              
-  /dpi {150,200,300,600}          scan resolution, dots per inch              
-  /color {RGB,GRAY,BW}            scan color mode                             
-  /format {BMP,PNG,GIF,JPG,TIF}   output image format                         
-  /output FILEPATH                path to output image file                   
-                                                                              
-e.g.:                                                                         
-  wia-cmd-scanner /dpi 300 /color RGB /format PNG /output .\scan.png          
+Usage: wia-cmd-scanner [OPTIONS]...
+
+All arguments are mandatory. Arguments must be ordered as follows:
+
+  /w WIDTH                        width of the scan area, mm
+  /h HEIGHT                       height of the scan area, mm
+  /dpi RESOLUTION                 scan resolution, dots per inch
+  /color {RGB,GRAY,BW}            scan color mode
+  /format {BMP,PNG,GIF,JPG,TIF}   output image format
+  /output FILEPATH                path to output image file
+
+Use /w 0 and /h 0 for scanner-defined values, e.g. for receipt scanners
+
+e.g. for A4 size black and white scan at 300 dpi:
+wia-cmd-scanner /w 210 /h 297 /dpi 300 /color BW /format PNG /output .\scan.png
 ```
 
 ## Build
@@ -36,6 +40,18 @@ No Visual Studio project files are provided, since the code can be imported into
 
 ## Scripting and automation
 
-Build your own automation tools around `wia-cmd-scanner.exe` binary using batch/powershell, or check out the source code.
+You can build your own automation tools around `wia-cmd-scanner.exe` binary using batch/powershell. E.g. a simple batch job infinitely waiting for key press and scanning to a file with timestamp can be very simply achieved as follows:
 
-The project is simple and tiny (~130 lines of VB code) and very easy to modify to fit your own needs.
+```
+@setlocal enabledelayedexpansion
+:loop
+    @echo off
+    @for /F "usebackq tokens=1,2 delims==" %%i in (`wmic os get LocalDateTime /VALUE 2^>NUL`) do if '.%%i.'=='.LocalDateTime.' set ldt=%%j
+    @set ldt=%ldt:~0,4%-%ldt:~4,2%-%ldt:~6,2%_%ldt:~8,2%-%ldt:~10,2%-%ldt:~12,2%
+    @echo on
+    wia-cmd-scanner.exe /w 215.9 /h 279.4 /dpi 300 /color RGB /format PNG /output ..\scans\scan_%ldt%.png
+    pause
+goto loop
+```
+
+For more sophisticated automated jobs, check out the source code. The project is very simple and easy to modify to fit your own needs.
