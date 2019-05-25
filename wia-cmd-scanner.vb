@@ -1,7 +1,7 @@
 Module Module1
 
     Sub printUsage()
-        Const version = "0.2"
+        Const version = "0.2.1"
         Console.WriteLine("wia-cmd-scanner (version " & version & ")                                      ")
         Console.WriteLine("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>  ")
         Console.WriteLine("                                                                               ")
@@ -16,13 +16,14 @@ Module Module1
         Console.WriteLine("  /h HEIGHT                       height of the scan area, mm                  ")
         Console.WriteLine("  /dpi RESOLUTION                 scan resolution, dots per inch               ")
         Console.WriteLine("  /color {RGB,GRAY,BW}            scan color mode                              ")
+        Console.WriteLine("  /depth {1,8,24}                 scan color depth                              ")
         Console.WriteLine("  /format {BMP,PNG,GIF,JPG,TIF}   output image format                          ")
         Console.WriteLine("  /output FILEPATH                path to output image file                    ")
         Console.WriteLine("                                                                               ")
         Console.WriteLine("Use /w 0 and /h 0 for scanner-defined values, e.g. for receipt scanners        ")
         Console.WriteLine("                                                                               ")
         Console.WriteLine("e.g. for A4 size black and white scan at 300 dpi:                              ")
-        Console.WriteLine("wia-cmd-scanner /w 210 /h 297 /dpi 300 /color BW /format PNG /output .\scan.png")
+        Console.WriteLine("wia-cmd-scanner /w 210 /h 297 /dpi 300 /color BW /depth 1 /format PNG /output .\scan.png")
     End Sub
 
     Sub printExceptionMessage(ex As Exception)
@@ -66,7 +67,7 @@ Module Module1
             Exit Sub
         End If
 
-        If Not (clArgs(1) = "/w" And clArgs(3) = "/h" And clArgs(5) = "/dpi" And clArgs(7) = "/color" And clArgs(9) = "/format" And clArgs(11) = "/output") Then
+        If Not (clArgs(1) = "/w" And clArgs(3) = "/h" And clArgs(5) = "/dpi" And clArgs(7) = "/color" And clArgs(9) = "/depth" And clArgs(11) = "/format" And clArgs(13) = "/output") Then
             printUsage()
             Exit Sub
         End If
@@ -76,8 +77,9 @@ Module Module1
         Dim h As Double = clArgs(4)
         Dim dpi As Integer = clArgs(6)
         Dim color As String = clArgs(8)
-        Dim format As String = clArgs(10)
-        Dim output As String = clArgs(12)
+        Dim depth As Integer = clArgs(10)
+        Dim format As String = clArgs(12)
+        Dim output As String = clArgs(14)
 
         If Not ((w = 0 And h = 0) Or (w > 0 And h > 0)) Then
             printUsage()
@@ -141,6 +143,7 @@ Module Module1
                         Console.WriteLine("Scanning to file " & output & " (dpi = " & dpi & ", color mode '" & color & "', output format '" & format & "')")
                         ' set scan parameters
                         Dim props As New Dictionary(Of String(), Double)()
+                        props.Add({"4104", "WIA_IPA_DEPTH", "color depth"}, depth) ' color mode
                         props.Add({"6146", "WIA_IPS_CUR_INTENT", "color mode"}, colorcode) ' color mode
                         props.Add({"6147", "WIA_IPS_XRES", "resolution"}, dpi) ' horizontal dpi
                         props.Add({"6148", "WIA_IPS_YRES", "resolution"}, dpi) ' vertical dpi
