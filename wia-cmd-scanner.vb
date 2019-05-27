@@ -1,7 +1,7 @@
 Module Module1
 
     Sub printUsage()
-        Const version = "0.2"
+        Const version = "0.2.1"
         Console.WriteLine("wia-cmd-scanner (version " & version & ")                                      ")
         Console.WriteLine("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>  ")
         Console.WriteLine("                                                                               ")
@@ -85,12 +85,16 @@ Module Module1
         End If
 
         Dim colorcode As Integer
+        Dim depth As Integer
         If color = "RGB" Then
             colorcode = 1
+            depth = 24
         ElseIf color = "GRAY" Then
             colorcode = 2
+            depth = 8
         ElseIf color = "BW" Then
             colorcode = 4
+            depth = 1
         Else
             printUsage()
             Exit Sub
@@ -142,6 +146,7 @@ Module Module1
                         ' set scan parameters
                         Dim props As New Dictionary(Of String(), Double)()
                         props.Add({"6146", "WIA_IPS_CUR_INTENT", "color mode"}, colorcode) ' color mode
+                        props.Add({"4104", "WIA_IPA_DEPTH", "color depth"}, depth) ' color depth
                         props.Add({"6147", "WIA_IPS_XRES", "resolution"}, dpi) ' horizontal dpi
                         props.Add({"6148", "WIA_IPS_YRES", "resolution"}, dpi) ' vertical dpi
                         If w > 0 Then

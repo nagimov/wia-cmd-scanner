@@ -2,7 +2,7 @@
 
 This (very) small utility (~30 KB executable) provides an easy to use command-line interface to WIA-compatible scanners for Windows OS. If scanner is accessible using `Windows Fax and Scan` application, it is very likely to be compatible with this tool. Compiled binaries can be downloaded from [Releases](https://github.com/nagimov/wia-cmd-scanner/releases)
 
-The utility is built around WIA (Microsoft Windows Image Acquisition Library). Depending from version of Windows OS, WIA library (included file `Interop.WIA.dll`) can be required to be placed next to `wia-cmd-scanner.exe` executable. No other external dependencies are required (targeted .NET framework 3.5 comes pre-installed starting from Windows 7). The utility is portable and requires no installation. Both 32-bit and 64-bit versions of Windows OS are supported.
+The utility is built around WIA (Microsoft Windows Image Acquisition Library) and requires [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718) (it is likely already included in your Windows OS). The utility is portable and requires no installation. Both 32-bit and 64-bit versions of Windows OS are supported.
 
 ## Usage
 
