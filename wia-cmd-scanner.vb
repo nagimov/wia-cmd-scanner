@@ -1,7 +1,7 @@
 Module Module1
 
     Sub printUsage()
-        Const version = "0.2.1"
+        Const version = "0.2.2"
         Console.WriteLine("wia-cmd-scanner (version " & version & ")                                      ")
         Console.WriteLine("License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>  ")
         Console.WriteLine("                                                                               ")
@@ -107,6 +107,17 @@ Module Module1
         Const wiaFormatJPG = "{B96B3CAE-0728-11D3-9D7B-0000F81EF32E}"
         Const wiaFormatTIF = "{B96B3CB1-0728-11D3-9D7B-0000F81EF32E}"
 
+        ' these WIA properties are mandatory to set, quit if can't set any of them
+        Dim mandatoryToSetWIA = New String() {"WIA_IPS_CUR_INTENT", _
+                                              "WIA_IPS_XRES", _
+                                              "WIA_IPS_YRES", _
+                                              "WIA_IPS_XEXTENT", _
+                                              "WIA_IPS_YEXTENT", _
+                                              "WIA_IPS_XPOS", _
+                                              "WIA_IPS_YPOS"}
+        ' if can't set any of these WIA properties, do not ask user to try to change scan parameters
+        Dim unknownErrorIfUnsetWIA = New String() {"WIA_IPS_XPOS", "WIA_IPS_YPOS"}
+
         If format = "BMP" Then
             fileformat = wiaFormatBMP
         ElseIf format = "PNG" Then
@@ -152,8 +163,8 @@ Module Module1
                         If w > 0 Then
                             props.Add({"6151", "WIA_IPS_XEXTENT", "width"}, w / 25.4 * dpi) ' width in pixels
                             props.Add({"6152", "WIA_IPS_YEXTENT", "height"}, h / 25.4 * dpi) ' height in pixels
-                            props.Add({"6149", "WIA_IPS_XPOS", "exit"}, 0) ' x origin of scan area
-                            props.Add({"6150", "WIA_IPS_YPOS", "exit"}, 0) ' y origin of scan area
+                            props.Add({"6149", "WIA_IPS_XPOS", "x origin"}, 0) ' x origin of scan area
+                            props.Add({"6150", "WIA_IPS_YPOS", "y origin"}, 0) ' y origin of scan area
                         End If
                         For Each pair As KeyValuePair(Of String(), Double) In props
                             Try
@@ -162,12 +173,14 @@ Module Module1
                                 End With
                             Catch ex As Exception
                                 Console.WriteLine("Can't set property " & pair.Key(1))
-                                If (pair.Key(2) <> "exit") Then
-                                    Console.WriteLine("Unsupported parameter, try scanning with different " & pair.Key(2))
-                                Else
-                                    Console.WriteLine("Unknown issue, quitting")
+                                If mandatoryToSetWIA.Contains(pair.Key(1)) Then
+                                    If unknownErrorIfUnsetWIA.Contains(pair.Key(1)) Then
+                                        Console.WriteLine("Unknown error while setting " & pair.Key(2))
+                                    Else
+                                        Console.WriteLine("Unsupported parameter, try scanning with different " & pair.Key(2))
+                                    End If
+                                    Exit Sub
                                 End If
-                                Exit Sub
                             End Try
                         Next
                         ' scan image as BMP...
