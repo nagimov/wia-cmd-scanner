@@ -2,7 +2,7 @@
 
 This (very) small utility (~30 KB executable) provides an easy to use command-line interface to WIA-compatible scanners for Windows OS. If scanner is accessible using `Windows Fax and Scan` application, it is very likely to be compatible with this tool. Compiled binaries can be downloaded from [Releases](https://github.com/nagimov/wia-cmd-scanner/releases)
 
-The utility is built around WIA (Microsoft Windows Image Acquisition Library) and requires [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718) (it is likely already included in your Windows OS). The utility is portable and requires no installation. Both 32-bit and 64-bit versions of Windows OS are supported.
+The utility is built around WIA (Microsoft Windows Image Acquisition Library v2.0) and requires [Microsoft .NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718) (it is likely already included in your Windows OS). The utility is portable and requires no installation. Both 32-bit and 64-bit versions of Windows XP ([see the note below](#note-for-windows-xp-users)), Windows Vista, Windows 7, Windows 8/8.1, Windows 10 are supported.
 
 ## Usage
 
@@ -55,3 +55,15 @@ goto loop
 ```
 
 For more sophisticated automated jobs, check out the source code. The project is very simple and easy to modify to fit your own needs.
+
+## Note for Windows XP users
+
+Since Windows XP only includes legacy WIA v1.0 library, WIA v2.0 needs to be installed in order for this utility to work.
+
+Archive with required files: [wiaautsdk.zip](http://vbnet.mvps.org/files/updates/wiaautsdk.zip)
+
+### WIA v2.0 installation
+
+* Copy the `wiaaut.chm` and `wiaaut.chi` files to your `Help` directory (usually located at `C:\Windows\Help`)
+* Copy the `wiaaut.dll` file to your `System32` directory (usually located at `C:\Windows\System32`)
+* From a Command Prompt in the `System32` directory run the following command: `RegSvr32 WIAAut.dll`
